@@ -5,6 +5,21 @@ from argparse import ArgumentParser, Action
 from datetime import datetime as dt
 
 
+class SelectSort(Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        time_start = dt.now()
+        for i in range(len(values)):
+            min_val_idx = i
+            for j in range(i+1,len(values)):
+                if values[j] < values[min_val_idx]:
+                    min_val_idx = j
+            values.insert(i, values.pop(min_val_idx))
+        print(values)
+        time_end = dt.now()
+        total = time_end - time_start
+        print('selection sort: {}'.format(total))
+
+
 class InsertSort(Action):
     def __call__(self, parser, namespace, values, option_string=None):
         time_start = dt.now()
@@ -16,7 +31,7 @@ class InsertSort(Action):
         print(values)
         time_end = dt.now()
         total = time_end - time_start
-        print('time taken: {}'.format(total))
+        print('insertion sort: {}'.format(total))
 
 
 class RadixSort(Action):
@@ -48,7 +63,7 @@ class RadixSort(Action):
         print(array)
         time_end = dt.now()
         total = time_end - time_start
-        print('time taken: {}'.format(total))
+        print('radix sort: {}'.format(total))
 
 
 class isUnique(Action):
@@ -103,7 +118,9 @@ class Anagrams(Action):
 fn_parser = ArgumentParser(description='simple python exercises for arrays and strings')
 
 # Sorting
-fn_parser.add_argument('--insert-sort', help='Perform an insert sort on an array', nargs='*', type=int,
+fn_parser.add_argument('--select-sort', help='Perform a selection sort on an array', nargs='*', type=int,
+                       action=SelectSort)
+fn_parser.add_argument('--insert-sort', help='Perform an insertion sort on an array', nargs='*', type=int,
                        action=InsertSort)
 fn_parser.add_argument('--radix-sort', help='Perform a radix sort on an array', nargs='*', type=int, action=RadixSort)
 
