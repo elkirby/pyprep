@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import string
+import sys
 from argparse import Action, ArgumentParser
 from datetime import datetime as dt
 from random import randint
@@ -132,7 +133,7 @@ sorters.add_argument('values',
                      help='Values to pass to sorting algorithm',
                      nargs='?',
                      default=generate_values())
-sorters.add_argument('--autogenerate', '-a', 
+sorters.add_argument('--autogenerate', '-a',
                      help='Generate a list of test values for use as sorting input',
                      metavar=('SIZE', 'MAX_VALUE'),
                      nargs=2,
@@ -151,10 +152,17 @@ string_ops.add_argument('--duplicates', help='Remove duplicate characters', acti
 string_ops.add_argument('--anagrams', help='Check if two strings are anagrams', nargs=2, action=Anagrams)
 
 
-if __name__ == '__main__':
+def main():
+    if len(sys.argv) == 1:
+        fn_parser.print_help()
+        exit(1)
     args = fn_parser.parse_args()
     if args.method:
         if args.autogenerate:
             input = generate_values(args.autogenerate[0], args.autogenerate[1])
             args.values = input
-        locals()[args.method + '_sort'](args.values, args.debug)
+        globals()[args.method + '_sort'](args.values, args.debug)
+
+
+if __name__ == '__main__':
+    main()
