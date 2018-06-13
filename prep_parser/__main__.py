@@ -119,6 +119,20 @@ class Anagrams(Action):
         else:
             print('congrats! you got yourself an anagram.')
 
+def product_of_idx(values, debug=False):
+    time_start = dt.now()
+    product_array = []
+    for i in range(len(values)):
+        total = 0
+        for j in range(len(values)):
+            if j != i:
+                total = total * values[j] if total else values[j]
+        product_array.append(total)
+    if debug:
+        print(product_array)
+    time_end = dt.now()
+    print('time taken: {}'.format(time_end - time_start))
+
 
 fn_parser = ArgumentParser(description='simple python exercises for arrays and strings')
 subparsers = fn_parser.add_subparsers(help='operations')
@@ -131,8 +145,9 @@ sorters.add_argument('method',
                      choices=['selection', 'insertion', 'radix'])
 sorters.add_argument('values',
                      help='Values to pass to sorting algorithm',
-                     nargs='?',
-                     default=generate_values())
+                     nargs='+',
+                     type=int,
+                     default=[])
 sorters.add_argument('--autogenerate', '-a',
                      help='Generate a list of test values for use as sorting input',
                      metavar=('SIZE', 'MAX_VALUE'),
@@ -151,18 +166,41 @@ string_ops.add_argument('--reverse', help='Reverse a C-Style string', action=CRe
 string_ops.add_argument('--duplicates', help='Remove duplicate characters', action=RDupes)
 string_ops.add_argument('--anagrams', help='Check if two strings are anagrams', nargs=2, action=Anagrams)
 
+# Misc. Example Problems
+array_ops = subparsers.add_parser('arrays', help='Misc. array processing and manipulation')
+array_ops.add_argument('problem',
+                     help='Which problem to test',
+                     choices=['product_of_idx'])
+array_ops.add_argument('values',
+                     help='Values to pass to problem',
+                     nargs='+',
+                     type=int,
+                     default=[])
+array_ops.add_argument('--autogenerate', '-a',
+                     help='Generate a list of test values for use as input',
+                     metavar=('SIZE', 'MAX_VALUE'),
+                     nargs=2,
+                     type=int)
+array_ops.add_argument('--debug', '-d',
+                     help='Print final array for debug purposes',
+                     type=bool,
+                     default=False)
 
 def main():
     if len(sys.argv) == 1:
         fn_parser.print_help()
         exit(1)
     args = fn_parser.parse_args()
-    if args.method:
+    if getattr(args, 'method', None):
         if args.autogenerate:
             input = generate_values(args.autogenerate[0], args.autogenerate[1])
             args.values = input
         globals()[args.method + '_sort'](args.values, args.debug)
-
+    elif getattr(args, 'problem', None):
+        if args.autogenerate:
+            input = generate_values(args.autogenerate[0], args.autogenerate[1])
+            args.values = input
+        globals()[args.problem](args.values, args.debug)
 
 if __name__ == '__main__':
     main()
