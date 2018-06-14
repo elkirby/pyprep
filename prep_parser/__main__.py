@@ -58,7 +58,7 @@ def radix_sort(values, debug=False):
                 numbers.append(num)
         return numbers
 
-    max_num = max(values)
+    max_num = max(values) if values else -1
 
     iteration = 0
     while 10 ** iteration <= max_num:
@@ -119,15 +119,24 @@ class Anagrams(Action):
         else:
             print('congrats! you got yourself an anagram.')
 
+
 def product_of_idx(values, debug=False):
+    # greedy algorithm approach, O(n)
     time_start = dt.now()
-    product_array = []
+    product_array = [None] * len(values)
+    total_so_far = 1
+
+    # product of all values before i
     for i in range(len(values)):
-        total = 0
-        for j in range(len(values)):
-            if j != i:
-                total = total * values[j] if total else values[j]
-        product_array.append(total)
+        product_array[i] = total_so_far
+        total_so_far *= values[i]
+    
+    # now product of all values after i
+    # start at end and go back
+    total_so_far = 1
+    for i in range(len(values) - 1, -1, -1):
+        product_array[i] *= total_so_far
+        total_so_far *= values[i]
     if debug:
         print(product_array)
     time_end = dt.now()
@@ -145,7 +154,7 @@ sorters.add_argument('method',
                      choices=['selection', 'insertion', 'radix'])
 sorters.add_argument('values',
                      help='Values to pass to sorting algorithm',
-                     nargs='+',
+                     nargs='*',
                      type=int,
                      default=[])
 sorters.add_argument('--autogenerate', '-a',
@@ -173,7 +182,7 @@ array_ops.add_argument('problem',
                      choices=['product_of_idx'])
 array_ops.add_argument('values',
                      help='Values to pass to problem',
-                     nargs='+',
+                     nargs='*',
                      type=int,
                      default=[])
 array_ops.add_argument('--autogenerate', '-a',
