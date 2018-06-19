@@ -11,7 +11,7 @@ def generate_values(size=100, max_val=100):
     return [randint(0, max_val) for i in range(size)]
 
 
-def selection_sort(values, debug=False):
+def selection_sort(values):
     time_start = dt.now()
     for i in range(len(values)):
         min_val_idx = i
@@ -19,29 +19,29 @@ def selection_sort(values, debug=False):
             if values[j] < values[min_val_idx]:
                 min_val_idx = j
         values.insert(i, values.pop(min_val_idx))
-    if debug:
-        print(values)
+    
+    print(values)
     time_end = dt.now()
     total = time_end - time_start
     print('selection sort: {}'.format(total))
 
 
-def insertion_sort(values, debug=False):
+def insertion_sort(values):
     time_start = dt.now()
     for i in range(1, len(values)):
         j = i - 1
         while j >= 0 and values[j + 1] < values[j]:
             values[j], values[j + 1] = values[j + 1], values[j]
             j -= 1
-    if debug:
-        print(values)
+    
+    print(values)
     time_end = dt.now()
     total = time_end - time_start
     print('insertion sort: {}'.format(total))
 
 
 # assumes base 10, positive integers
-def radix_sort(values, debug=False):
+def radix_sort(values):
     time_start = dt.now()
 
     def get_buckets(array, level):
@@ -64,8 +64,8 @@ def radix_sort(values, debug=False):
     while 10 ** iteration <= max_num:
         values = get_list(get_buckets(values, iteration))
         iteration += 1
-    if debug:
-        print(values)
+    
+    print(values)
     time_end = dt.now()
     total = time_end - time_start
     print('radix sort: {}'.format(total))
@@ -120,7 +120,30 @@ class Anagrams(Action):
             print('congrats! you got yourself an anagram.')
 
 
-def highest_product_of_3(values, debug=False):
+def product_of_idx(values):
+    # greedy algorithm approach, O(n)
+    time_start = dt.now()
+    product_array = [None] * len(values)
+    total_so_far = 1
+
+    # product of all values before i
+    for i in range(len(values)):
+        product_array[i] = total_so_far
+        total_so_far *= values[i]
+    
+    # now product of all values after i
+    # start at end and go back
+    total_so_far = 1
+    for i in range(len(values) - 1, -1, -1):
+        product_array[i] *= total_so_far
+        total_so_far *= values[i]
+    
+    print(product_array)
+    time_end = dt.now()
+    print('time taken: {}'.format(time_end - time_start))
+
+
+def highest_product_of_3(values):
     # greedy algorithm approach, O(n) time, O(1) space
     time_start = dt.now()
     # start with first 3
@@ -154,34 +177,46 @@ def highest_product_of_3(values, debug=False):
         highest = max(highest, current)
         lowest = min(lowest, current)
 
-    if debug:
-        print(highest_product_of_3)
+    print(highest_product_of_3)
     time_end = dt.now()
     print('time taken: {}'.format(time_end - time_start))
 
 
-def product_of_idx(values, debug=False):
-    # greedy algorithm approach, O(n)
+def is_single_riffle(cards):
+    """
+    Single Riffle
+    Originally, all cards are in order, i.e. 1, 2, 3 .. 52
+    Split in half, half1 is 1 .. 26, half2 is 27 .. 52
+    If it is a single riffle, while cards, check for perfect ascending order
+    of each side
+    """
     time_start = dt.now()
-    product_array = [None] * len(values)
-    total_so_far = 1
+    if len(cards) != 52:
+        print('Improper deck length. A full deck is 52 cards.')
+        exit(1)
+    current = 0
+    is_riffle = True
+    deck = [r for r in range(1, 53)]
+    half1 = deck[:len(deck)//2]
+    half2 = deck[len(deck)//2:]
+    half1_idx = 0
+    half2_idx = 0
+ 
+    for card in cards:
+        
+        if half1_idx < 26 and card == half1[half1_idx]:
+            half1_idx += 1
 
-    # product of all values before i
-    for i in range(len(values)):
-        product_array[i] = total_so_far
-        total_so_far *= values[i]
-    
-    # now product of all values after i
-    # start at end and go back
-    total_so_far = 1
-    for i in range(len(values) - 1, -1, -1):
-        product_array[i] *= total_so_far
-        total_so_far *= values[i]
-    if debug:
-        print(product_array)
+        elif half2_idx < 26 and card == half2[half2_idx]:
+            half2_idx += 1
+
+        else:
+            is_riffle = False
+            break
+
+    print('Is single riffle: %s' % is_riffle)
     time_end = dt.now()
     print('time taken: {}'.format(time_end - time_start))
-
 
 fn_parser = ArgumentParser(description='simple python exercises for arrays and strings')
 subparsers = fn_parser.add_subparsers(help='operations')
@@ -202,10 +237,6 @@ sorters.add_argument('--autogenerate', '-a',
                      metavar=('SIZE', 'MAX_VALUE'),
                      nargs=2,
                      type=int)
-sorters.add_argument('--debug', '-d',
-                     help='Print final array for debug purposes',
-                     type=bool,
-                     default=False)
 
 # Misc. String operations
 string_ops = subparsers.add_parser('str', help='String processing and manipulation')
@@ -219,7 +250,8 @@ string_ops.add_argument('--anagrams', help='Check if two strings are anagrams', 
 array_ops = subparsers.add_parser('arrays', help='Misc. array processing and manipulation')
 array_ops.add_argument('problem',
                      help='Which problem to test',
-                     choices=['product_of_idx', 'highest_product_of_3'])
+                     choices=['product_of_idx', 'highest_product_of_3',
+                              'is_single_riffle'])
 array_ops.add_argument('values',
                      help='Values to pass to problem',
                      nargs='*',
@@ -230,10 +262,7 @@ array_ops.add_argument('--autogenerate', '-a',
                      metavar=('SIZE', 'MAX_VALUE'),
                      nargs=2,
                      type=int)
-array_ops.add_argument('--debug', '-d',
-                     help='Print final array for debug purposes',
-                     type=bool,
-                     default=False)
+
 
 def main():
     if len(sys.argv) == 1:
@@ -244,12 +273,12 @@ def main():
         if args.autogenerate:
             input = generate_values(args.autogenerate[0], args.autogenerate[1])
             args.values = input
-        globals()[args.method + '_sort'](args.values, args.debug)
+        globals()[args.method + '_sort'](args.values)
     elif getattr(args, 'problem', None):
         if args.autogenerate:
             input = generate_values(args.autogenerate[0], args.autogenerate[1])
             args.values = input
-        globals()[args.problem](args.values, args.debug)
+        globals()[args.problem](args.values)
 
 if __name__ == '__main__':
     main()
