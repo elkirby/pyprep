@@ -288,6 +288,34 @@ def binary_search(values):
     print('time taken: {}'.format(time_end - time_start))
 
 
+def rotation_point(values):
+    time_start = dt.now()
+    """
+    Assume sorted. Somewhere in list, list[i] < list[i-1]
+    Account for rotation point being the first element.
+    Brute-force approach can be done in O(N)
+    By modifying binary search, can be done in O(lg(N))
+    """
+    rotation_point = 0
+    if len(values) > 1:
+        first_word = values[0]
+        floor = 0
+        ceiling = len(values) - 1
+        while floor < ceiling - 1:
+            guess = floor + ((ceiling - floor) // 2)
+
+            # Check if floor is first word or whether it's higher than it
+            if values[guess] >= first_word:
+                floor = guess
+            else:
+                ceiling = guess
+        
+        rotation_point = ceiling
+    print('Rotation point: %s' % rotation_point)
+    total = dt.now() - time_start
+    print('Time taken: {}'.format(total))
+
+
 # Parser
 fn_parser = ArgumentParser(description='simple python exercises for arrays and strings')
 subparsers = fn_parser.add_subparsers(help='operations')
@@ -332,7 +360,7 @@ int_arrays.add_argument('values',
 str_arrays = array_parsers.add_parser('str', help='string array operations')
 str_arrays.add_argument('problem',
                      help='Which problem to test',
-                     choices=['shuffle'])
+                     choices=['shuffle', 'rotation_point'])
 str_arrays.add_argument('values',
                      help='Values to pass to problem',
                      nargs='*',
