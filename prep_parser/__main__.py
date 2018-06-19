@@ -3,6 +3,7 @@
 import string
 import sys
 from argparse import Action, ArgumentParser
+from collections import namedtuple
 from datetime import datetime as dt
 from random import randint, randrange
 
@@ -288,6 +289,47 @@ def binary_search(values):
     print('time taken: {}'.format(time_end - time_start))
 
 
+def merge_ranges(values):
+    time_start = dt.now()
+    if len(values) % 2:
+        print('Invalid ranges! List length must be a multiple of 2.')
+        exit(1)
+
+    meetings = []
+    Meeting = namedtuple('Meeting', ['start', 'end'])
+    for i in range(0, len(values), 2):
+        meetings.append(Meeting(values[i], values[i+1]))
+        
+    max_value = max([r.start for r in meetings])
+    num_counts = [[] for i in range(max_value + 1)]
+
+    for item in meetings:
+        num_counts[item.start].append(item)
+
+    array_idx = 0
+    for count in num_counts:
+
+        for meeting in count:
+            meetings[array_idx] = meeting
+            array_idx += 1
+    
+    merged_meetings = [meetings[0]]
+    for meeting in meetings[1:]:
+        last_meeting = merged_meetings[-1]
+        if meeting.start <= last_meeting.end:
+            merged_meetings[-1] = Meeting(last_meeting.start,
+                                          max(last_meeting.end,
+                                              meeting.end))
+
+        else:
+            merged_meetings.append(meeting)
+
+
+    print('Meetings: %s' % merged_meetings)
+    total = dt.now() - time_start
+    print('Time taken: {}'.format(total))
+
+
 def rotation_point(values):
     time_start = dt.now()
     """
@@ -351,7 +393,7 @@ int_arrays = array_parsers.add_parser('int', help='integer specific array operat
 int_arrays.add_argument('problem',
                      help='Which problem to test',
                      choices=['product_of_idx', 'highest_product_of_3',
-                              'is_single_riffle', 'binary_search'])
+                              'is_single_riffle', 'binary_search', 'merge_ranges'])
 int_arrays.add_argument('values',
                      help='Values to pass to problem',
                      nargs='*',
