@@ -4,13 +4,14 @@ import string
 import sys
 from argparse import Action, ArgumentParser
 from datetime import datetime as dt
-from random import randint
+from random import randint, randrange
 
-
+# Utilities
 def generate_values(size=100, max_val=100):
     return [randint(0, max_val) for i in range(size)]
 
 
+# Sort
 def selection_sort(values):
     time_start = dt.now()
     for i in range(len(values)):
@@ -71,6 +72,7 @@ def radix_sort(values):
     print('radix sort: {}'.format(total))
 
 
+# String Methods
 class isUnique(Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
@@ -120,6 +122,7 @@ class Anagrams(Action):
             print('congrats! you got yourself an anagram.')
 
 
+# Array manipulations
 def product_of_idx(values):
     # greedy algorithm approach, O(n)
     time_start = dt.now()
@@ -218,12 +221,29 @@ def is_single_riffle(cards):
     time_end = dt.now()
     print('time taken: {}'.format(time_end - time_start))
 
+
+def shuffle(values):
+    # Fisher-Yates / Knuth Shuffle
+    time_start = dt.now()
+
+    if len(values) > 1:
+        for i in range(len(values)):
+            random_index = randrange(i, len(values))
+            if random_index != i:
+                values[i], values[random_index] = \
+                        values[random_index], values[i]
+
+    print(values)
+    time_end = dt.now()
+    print('time taken: {}'.format(time_end - time_start))
+
+
+# Parser
 fn_parser = ArgumentParser(description='simple python exercises for arrays and strings')
 subparsers = fn_parser.add_subparsers(help='operations')
 
-# Sorting
+## sorters
 sorters = subparsers.add_parser('sort', help='Sorting operations')
-
 sorters.add_argument('method',
                      help='Type of sorting algorithm to use',
                      choices=['selection', 'insertion', 'radix'])
@@ -238,7 +258,7 @@ sorters.add_argument('--autogenerate', '-a',
                      nargs=2,
                      type=int)
 
-# Misc. String operations
+## string operations
 string_ops = subparsers.add_parser('str', help='String processing and manipulation')
 
 string_ops.add_argument('--unique', help='Determine if an ASCII string has all unique characters', action=isUnique)
@@ -246,12 +266,12 @@ string_ops.add_argument('--reverse', help='Reverse a C-Style string', action=CRe
 string_ops.add_argument('--duplicates', help='Remove duplicate characters', action=RDupes)
 string_ops.add_argument('--anagrams', help='Check if two strings are anagrams', nargs=2, action=Anagrams)
 
-# Misc. Example Problems
+## array functions
 array_ops = subparsers.add_parser('arrays', help='Misc. array processing and manipulation')
 array_ops.add_argument('problem',
                      help='Which problem to test',
                      choices=['product_of_idx', 'highest_product_of_3',
-                              'is_single_riffle'])
+                              'is_single_riffle', 'shuffle'])
 array_ops.add_argument('values',
                      help='Values to pass to problem',
                      nargs='*',
