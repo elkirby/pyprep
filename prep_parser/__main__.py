@@ -120,6 +120,46 @@ class Anagrams(Action):
             print('congrats! you got yourself an anagram.')
 
 
+def highest_product_of_3(values, debug=False):
+    # greedy algorithm approach, O(n) time, O(1) space
+    time_start = dt.now()
+    # start with first 3
+    if len(values) < 3:
+        print('Need at least 3 values!')
+        exit(1)
+    highest = max(values[0], values[1])
+    lowest = min(values[0], values[1])
+    highest_product_of_2 = values[0] * values[1]
+    lowest_product_of_2 = values[0] * values[1]
+    highest_product_of_3 = values[0] * values[1] * values[2]
+
+    for i in range(2, len(values)):
+        current = values[i]
+        # new highest product of 3?
+        highest_product_of_3 = max(highest_product_of_3,
+                                   current * highest_product_of_2,
+                                   current * lowest_product_of_2)
+        
+        # new highest product of 2?
+        highest_product_of_2 = max(highest_product_of_2,
+                                   current * highest,
+                                   current * lowest)
+
+        # new lowest product of 2?
+        lowest_product_of_2 = min(lowest_product_of_2,
+                                  current * highest,
+                                  current * lowest)
+
+        # new highest or lowest?
+        highest = max(highest, current)
+        lowest = min(lowest, current)
+
+    if debug:
+        print(highest_product_of_3)
+    time_end = dt.now()
+    print('time taken: {}'.format(time_end - time_start))
+
+
 def product_of_idx(values, debug=False):
     # greedy algorithm approach, O(n)
     time_start = dt.now()
@@ -179,7 +219,7 @@ string_ops.add_argument('--anagrams', help='Check if two strings are anagrams', 
 array_ops = subparsers.add_parser('arrays', help='Misc. array processing and manipulation')
 array_ops.add_argument('problem',
                      help='Which problem to test',
-                     choices=['product_of_idx'])
+                     choices=['product_of_idx', 'highest_product_of_3'])
 array_ops.add_argument('values',
                      help='Values to pass to problem',
                      nargs='*',
