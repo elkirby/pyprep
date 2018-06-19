@@ -41,7 +41,27 @@ def insertion_sort(values):
     print('insertion sort: {}'.format(total))
 
 
-# assumes base 10, positive integers
+def counting_sort(values):
+    time_start = dt.now()
+    max_value = max(values)
+
+    num_counts = [0] * (max_value + 1)
+
+    for item in values:
+        num_counts[item] += 1
+
+    array_idx = 0
+    for item, count in enumerate(num_counts):
+
+        for _ in range(count):
+            values[array_idx] = item
+            array_idx += 1
+
+    print(values)
+    total = dt.now() - time_start
+    print('counting sort: {}'.format(total))
+
+
 def radix_sort(values):
     time_start = dt.now()
 
@@ -276,7 +296,7 @@ subparsers = fn_parser.add_subparsers(help='operations')
 sorters = subparsers.add_parser('sort', help='Sorting operations')
 sorters.add_argument('method',
                      help='Type of sorting algorithm to use',
-                     choices=['selection', 'insertion', 'radix'])
+                     choices=['selection', 'insertion', 'radix', 'counting'])
 sorters.add_argument('values',
                      help='Values to pass to sorting algorithm',
                      nargs='*',
@@ -298,14 +318,25 @@ string_ops.add_argument('--anagrams', help='Check if two strings are anagrams', 
 
 ## array functions
 array_ops = subparsers.add_parser('arrays', help='Misc. array processing and manipulation')
-array_ops.add_argument('problem',
+array_parsers = array_ops.add_subparsers(help='Array operations separated by allowed input.')
+int_arrays = array_parsers.add_parser('int', help='integer specific array operations')
+int_arrays.add_argument('problem',
                      help='Which problem to test',
                      choices=['product_of_idx', 'highest_product_of_3',
-                              'is_single_riffle', 'shuffle', 'binary_search'])
-array_ops.add_argument('values',
+                              'is_single_riffle', 'binary_search'])
+int_arrays.add_argument('values',
                      help='Values to pass to problem',
                      nargs='*',
                      type=int,
+                     default=[])
+str_arrays = array_parsers.add_parser('str', help='string array operations')
+str_arrays.add_argument('problem',
+                     help='Which problem to test',
+                     choices=['shuffle'])
+str_arrays.add_argument('values',
+                     help='Values to pass to problem',
+                     nargs='*',
+                     type=str,
                      default=[])
 array_ops.add_argument('--autogenerate', '-a',
                      help='Generate a list of test values for use as input',
