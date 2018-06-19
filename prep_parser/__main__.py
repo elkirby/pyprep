@@ -70,6 +70,7 @@ def radix_sort(values):
     time_end = dt.now()
     total = time_end - time_start
     print('radix sort: {}'.format(total))
+    return values
 
 
 # String Methods
@@ -238,6 +239,35 @@ def shuffle(values):
     print('time taken: {}'.format(time_end - time_start))
 
 
+def binary_search(values):
+    time_start = dt.now()
+    idx_of = -1
+    search = None
+    if len(values) > 1:
+        search = values[-1]
+        values = values[:-1]
+        values = radix_sort(values)
+
+        floor = -1
+        ceiling = len(values)
+        while floor + 1 < ceiling:
+            size = (ceiling - floor) // 2
+            guess = floor + size
+            if values[guess] == search:
+                idx_of = guess
+            elif values[guess] < search:
+                floor = guess
+            else:
+                ceiling = guess
+            if idx_of != -1:
+                break
+
+    print('Search value: %s' % search)
+    print('Index: %s' % idx_of)
+    time_end = dt.now()
+    print('time taken: {}'.format(time_end - time_start))
+
+
 # Parser
 fn_parser = ArgumentParser(description='simple python exercises for arrays and strings')
 subparsers = fn_parser.add_subparsers(help='operations')
@@ -271,7 +301,7 @@ array_ops = subparsers.add_parser('arrays', help='Misc. array processing and man
 array_ops.add_argument('problem',
                      help='Which problem to test',
                      choices=['product_of_idx', 'highest_product_of_3',
-                              'is_single_riffle', 'shuffle'])
+                              'is_single_riffle', 'shuffle', 'binary_search'])
 array_ops.add_argument('values',
                      help='Values to pass to problem',
                      nargs='*',
