@@ -144,6 +144,26 @@ class Anagrams(Action):
             print('congrats! you got yourself an anagram.')
 
 
+class WordCloudData(Action):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+
+        cloud_dict = {}
+        word_terminators = ' .,?!:;()'
+
+        beginning_of_word = 0
+        for i in range(len(values)):
+            if values[i] in word_terminators or i == len(values) - 1:
+                end_of_word = i if values[i] in word_terminators else None
+                word = values[beginning_of_word:end_of_word:].capitalize()
+                if word.strip('-'):
+                    if cloud_dict.get(word, ''):
+                        cloud_dict[word] += 1
+                    else:
+                        cloud_dict[word] = 1
+                beginning_of_word = i + 1
+        print(cloud_dict)
+
 # Array manipulations
 def product_of_idx(values):
     # greedy algorithm approach, O(n)
@@ -385,7 +405,7 @@ string_ops.add_argument('--unique', help='Determine if an ASCII string has all u
 string_ops.add_argument('--reverse', help='Reverse a C-Style string', action=CReverse)
 string_ops.add_argument('--duplicates', help='Remove duplicate characters', action=RDupes)
 string_ops.add_argument('--anagrams', help='Check if two strings are anagrams', nargs=2, action=Anagrams)
-
+string_ops.add_argument('--word-cloud', help='Generate data for a word cloud of input', action=WordCloudData)
 ## array functions
 array_ops = subparsers.add_parser('arrays', help='Misc. array processing and manipulation')
 array_parsers = array_ops.add_subparsers(help='Array operations separated by allowed input.')
