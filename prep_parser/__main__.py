@@ -162,7 +162,10 @@ class WordCloudData(Action):
                     else:
                         cloud_dict[word] = 1
                 beginning_of_word = i + 1
-        print(cloud_dict)
+        for key, value in sorted(cloud_dict.items(),
+                                 key=lambda x: (x[1],x[0]),
+                                 reverse=True):
+            print("%s: %s" % (key, value))
 
 # Array manipulations
 def product_of_idx(values):
