@@ -34,6 +34,21 @@ def insertion_sort(values):
     print(values)
 
 
+def heap_sort(values):
+    # need to create a max heap
+    # can do in place using properties of binary trees
+
+    for i in range(1, len(values)):
+        node_index = i
+        parent_index = (node_index - 1) >> 1
+        while values[node_index] > values[parent_index] and node_index >= 1:
+            values[node_index], values[parent_index] = values[parent_index], values[node_index]
+            node_index = parent_index
+            parent_index = (node_index - 1) >> 1
+
+    print(values)
+
+
 def counting_sort(values):
     max_value = max(values)
 
