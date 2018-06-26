@@ -14,7 +14,6 @@ def generate_values(size=100, max_val=100):
 
 # Sort
 def selection_sort(values):
-    time_start = dt.now()
     for i in range(len(values)):
         min_val_idx = i
         for j in range(i+1, len(values)):
@@ -23,13 +22,9 @@ def selection_sort(values):
         values.insert(i, values.pop(min_val_idx))
     
     print(values)
-    time_end = dt.now()
-    total = time_end - time_start
-    print('selection sort: {}'.format(total))
 
 
 def insertion_sort(values):
-    time_start = dt.now()
     for i in range(1, len(values)):
         j = i - 1
         while j >= 0 and values[j + 1] < values[j]:
@@ -37,13 +32,9 @@ def insertion_sort(values):
             j -= 1
     
     print(values)
-    time_end = dt.now()
-    total = time_end - time_start
-    print('insertion sort: {}'.format(total))
 
 
 def counting_sort(values):
-    time_start = dt.now()
     max_value = max(values)
 
     num_counts = [0] * (max_value + 1)
@@ -59,12 +50,9 @@ def counting_sort(values):
             array_idx += 1
 
     print(values)
-    total = dt.now() - time_start
-    print('counting sort: {}'.format(total))
 
 
 def radix_sort(values):
-    time_start = dt.now()
 
     def get_buckets(array, level):
         buckets = [[] for i in range(10)]
@@ -88,9 +76,6 @@ def radix_sort(values):
         iteration += 1
     
     print(values)
-    time_end = dt.now()
-    total = time_end - time_start
-    print('radix sort: {}'.format(total))
     return values
 
 
@@ -170,7 +155,6 @@ class WordCloudData(Action):
 # Array manipulations
 def product_of_idx(values):
     # greedy algorithm approach, O(n)
-    time_start = dt.now()
     product_array = [None] * len(values)
     total_so_far = 1
 
@@ -187,13 +171,10 @@ def product_of_idx(values):
         total_so_far *= values[i]
     
     print(product_array)
-    time_end = dt.now()
-    print('time taken: {}'.format(time_end - time_start))
 
 
 def highest_product_of_3(values):
     # greedy algorithm approach, O(n) time, O(1) space
-    time_start = dt.now()
     # start with first 3
     if len(values) < 3:
         print('Need at least 3 values!')
@@ -226,8 +207,6 @@ def highest_product_of_3(values):
         lowest = min(lowest, current)
 
     print(highest_product_of_3)
-    time_end = dt.now()
-    print('time taken: {}'.format(time_end - time_start))
 
 
 def is_single_riffle(cards):
@@ -238,7 +217,6 @@ def is_single_riffle(cards):
     If it is a single riffle, while cards, check for perfect ascending order
     of each side
     """
-    time_start = dt.now()
     if len(cards) != 52:
         print('Improper deck length. A full deck is 52 cards.')
         exit(1)
@@ -263,13 +241,10 @@ def is_single_riffle(cards):
             break
 
     print('Is single riffle: %s' % is_riffle)
-    time_end = dt.now()
-    print('time taken: {}'.format(time_end - time_start))
 
 
 def shuffle(values):
     # Fisher-Yates / Knuth Shuffle
-    time_start = dt.now()
 
     if len(values) > 1:
         for i in range(len(values)):
@@ -279,12 +254,9 @@ def shuffle(values):
                         values[random_index], values[i]
 
     print(values)
-    time_end = dt.now()
-    print('time taken: {}'.format(time_end - time_start))
 
 
 def binary_search(values):
-    time_start = dt.now()
     idx_of = -1
     search = None
     if len(values) > 1:
@@ -308,12 +280,9 @@ def binary_search(values):
 
     print('Search value: %s' % search)
     print('Index: %s' % idx_of)
-    time_end = dt.now()
-    print('time taken: {}'.format(time_end - time_start))
 
 
 def merge_ranges(values):
-    time_start = dt.now()
     if len(values) % 2:
         print('Invalid ranges! List length must be a multiple of 2.')
         exit(1)
@@ -349,12 +318,9 @@ def merge_ranges(values):
 
 
     print('Meetings: %s' % merged_meetings)
-    total = dt.now() - time_start
-    print('Time taken: {}'.format(total))
 
 
 def rotation_point(values):
-    time_start = dt.now()
     """
     Assume sorted. Somewhere in list, list[i] < list[i-1]
     Account for rotation point being the first element.
@@ -377,8 +343,6 @@ def rotation_point(values):
         
         rotation_point = ceiling
     print('Rotation point: %s' % rotation_point)
-    total = dt.now() - time_start
-    print('Time taken: {}'.format(total))
 
 
 # Parser
@@ -389,7 +353,7 @@ subparsers = fn_parser.add_subparsers(help='operations')
 sorters = subparsers.add_parser('sort', help='Sorting operations')
 sorters.add_argument('method',
                      help='Type of sorting algorithm to use',
-                     choices=['selection', 'insertion', 'radix', 'counting'])
+                     choices=['selection', 'insertion', 'heap', 'radix', 'counting'])
 sorters.add_argument('values',
                      help='Values to pass to sorting algorithm',
                      nargs='*',
@@ -439,6 +403,7 @@ array_ops.add_argument('--autogenerate', '-a',
 
 
 def main():
+    time_start = dt.now()
     if len(sys.argv) == 1:
         fn_parser.print_help()
         exit(1)
@@ -453,6 +418,8 @@ def main():
             input = generate_values(args.autogenerate[0], args.autogenerate[1])
             args.values = input
         globals()[args.problem](args.values)
+    total = dt.now() - time_start
+    print('Time taken: %s' % total)
 
 if __name__ == '__main__':
     main()
