@@ -38,6 +38,7 @@ def heap_sort(values):
     # need to create a max heap
     # can do in place using properties of binary trees
 
+    # Worst Case: O(n log n)
     for i in range(1, len(values)):
         node_index = i
         parent_index = (node_index - 1) >> 1
@@ -45,6 +46,27 @@ def heap_sort(values):
             values[node_index], values[parent_index] = values[parent_index], values[node_index]
             node_index = parent_index
             parent_index = (node_index - 1) >> 1
+
+    # sort
+    # Worst Case: O(n log n)
+    last_index = len(values) - 1
+    root_index = 0
+    while last_index > 0:
+        current_index = root_index
+        left_index = (current_index << 1) + 1
+        right_index = left_index + 1
+
+        # swap first and last value
+        values[root_index], values[last_index] = values[last_index], values[root_index]
+        last_index -= 1
+        # find new max and place current root properly
+        max_child = right_index if right_index <= last_index and values[right_index] > values[left_index] else left_index
+        while max_child <= last_index and values[current_index] < values[max_child]:
+            values[current_index], values[max_child] = values[max_child], values[current_index]
+            current_index = max_child
+            left_index = (current_index << 1) + 1
+            right_index = left_index + 1
+            max_child = right_index if right_index <= last_index and values[right_index] > values[left_index] else left_index
 
     print(values)
 
