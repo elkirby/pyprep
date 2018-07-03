@@ -357,6 +357,34 @@ def merge_ranges(values):
     print('Meetings: %s' % merged_meetings)
 
 
+def change_possibilities(values):
+    """
+    Last value is the amount to determine possibilities for.
+    Must have at least two values.
+    Will print:
+    1) All possibilities
+    2) Number of possibilities
+    """
+    amount = values[-1]
+    denominations = values[:-1]
+    capacities = [[] for r in range(amount + 1)]
+    capacities[0] = [[]]
+
+    for coin in denominations:
+        for capacity in range(coin, amount + 1):
+            amount_left = capacity - coin
+            combinations = capacities[amount_left]
+            for combo in combinations:
+                new_combo = combo + [coin]
+                capacities[capacity] += [new_combo]
+
+    possibilities = capacities[amount]
+    total = len(possibilities)
+        
+    print("Possibilities: %s" % possibilities)
+    print("Total %s" % total)
+
+
 def rotation_point(values):
     """
     Assume sorted. Somewhere in list, list[i] < list[i-1]
@@ -417,7 +445,7 @@ int_arrays = array_parsers.add_parser('int', help='integer specific array operat
 int_arrays.add_argument('problem',
                      help='Which problem to test',
                      choices=['product_of_idx', 'highest_product_of_3',
-                              'is_single_riffle', 'binary_search', 'merge_ranges'])
+                              'is_single_riffle', 'binary_search', 'merge_ranges', 'change_possibilities'])
 int_arrays.add_argument('values',
                      help='Values to pass to problem',
                      nargs='*',
